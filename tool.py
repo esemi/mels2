@@ -22,9 +22,12 @@ class DummyInvariant(BaseInvariant):
 
 class SeriesInvariant(BaseInvariant):
     letters = [
-        ('1313', 'A'),
-        ('13131', 'B'),
-        ('131', 'D'),
+        ('3535', 'A'),
+        ('1353531', 'B'),
+        ('131', 'C'),
+        ('1242', 'D'),
+        ('123232', 'E'),
+        ('1353531', 'G'),
     ]
 
     @staticmethod
@@ -71,7 +74,7 @@ class CompareStrategyBase:
 
 def prepare_matrix(source: list) -> list:
     # @todo clean noise
-    matrix = [list(row[:-1].strip().replace(' ', '0').replace('*', '1')) for row in source]
+    matrix = [list(row[:-1].replace(' ', '0').replace('*', '1')) for row in source]
     return matrix
 
 
