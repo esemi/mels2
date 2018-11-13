@@ -24,6 +24,7 @@ class SeriesInvariant(BaseInvariant):
     letters = [
         ('1313', 'A'),
         ('13131', 'B'),
+        ('131', 'D'),
     ]
 
     @staticmethod
@@ -39,14 +40,17 @@ class SeriesInvariant(BaseInvariant):
         return series_count
 
     def compare(self, matrix: list) -> set:
-        series_matrix = [self.compute_series_num(i) for i in matrix]
-        unique_series = ''
+        series_matrix = list(map(str, filter(lambda x: x > 0, [self.compute_series_num(i) for i in matrix])))
+        uniq_mask = ''
         # @todo make beautiful
-        for elem in map(str, filter(lambda x: x > 0, series_matrix)):
-            if not unique_series or elem != unique_series[-1]:
-                unique_series += elem
+        for elem in series_matrix:
+            if not uniq_mask or elem != uniq_mask[-1]:
+                uniq_mask += elem
+        full_mask = ''.join(series_matrix)
 
-        return set([i[1] for i in self.letters if i[0] == unique_series])
+        logging.debug('full mask %s', full_mask)
+        logging.debug('uniq mask %s', uniq_mask)
+        return set([i[1] for i in self.letters if i[0] == uniq_mask or i[0] == full_mask])
 
 
 class CompareStrategyBase:
@@ -77,7 +81,7 @@ def main(filepath: str) -> Optional[str]:
         matrix = prepare_matrix(f.readlines())
 
     logging.debug('prepare matrix %s', matrix)
-    comparators_enabled = [DummyInvariant(), SeriesInvariant()]
+    comparators_enabled = [SeriesInvariant(), ]
 
     determined_letters = [compare_cls.compare(matrix) for compare_cls in comparators_enabled]
     logging.info('comparators result %s', determined_letters)
