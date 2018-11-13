@@ -12,7 +12,7 @@ class BaseInvariant(abc.ABC):
         :param matrix: list of lists
         :return: {'A', 'B', 'C'}
         """
-        pass
+        return set()
 
 
 class DummyInvariant(BaseInvariant):
@@ -21,10 +21,32 @@ class DummyInvariant(BaseInvariant):
 
 
 class SeriesInvariant(BaseInvariant):
-    def compare(self, matrix: list) -> set:
-        # series_matrix
+    letters = [
+        ('1313', 'A'),
+        ('13131', 'B'),
+    ]
 
-        return {'B', 'C'}
+    @staticmethod
+    def compute_series_num(row: list) -> int:
+        # @todo make beautiful
+        series_count = 0
+        last_mask = None
+        for i in row:
+            if last_mask is None or last_mask != i:
+                series_count += 1
+                last_mask = i
+                continue
+        return series_count
+
+    def compare(self, matrix: list) -> set:
+        series_matrix = [self.compute_series_num(i) for i in matrix]
+        unique_series = ''
+        # @todo make beautiful
+        for elem in map(str, filter(lambda x: x > 0, series_matrix)):
+            if not unique_series or elem != unique_series[-1]:
+                unique_series += elem
+
+        return set([i[1] for i in self.letters if i[0] == unique_series])
 
 
 class CompareStrategyBase:
@@ -44,6 +66,7 @@ class CompareStrategyBase:
 
 
 def prepare_matrix(source: list) -> list:
+    # @todo clean noise
     matrix = [list(row[:-1].strip().replace(' ', '0').replace('*', '1')) for row in source]
     return matrix
 
